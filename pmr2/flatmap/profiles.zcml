@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="pmr2.flatmap">
+
+  <genericsetup:registerProfile
+      name="default"
+      title="Flatmap Viewer for PMR2"
+      directory="profiles/default"
+      description="Provide additional configuration options for the pmr2.flatmap package"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      />
+
+</configure>
