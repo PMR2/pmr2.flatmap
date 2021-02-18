@@ -4,7 +4,22 @@
     i18n_domain="pmr2">
 
   <include file="profiles.zcml"/>
+  <include file="vocab.zcml"/>
+  <include package=".browser"/>
 
   <!-- Note storage -->
+
+  <adapter
+      for="pmr2.app.exposure.interfaces.IExposureFile"
+      factory=".note.FlatmapViewerNoteFactory"
+      provides="pmr2.flatmap.interfaces.IFlatmapViewerNote"
+      name="flatmap_viewer"
+      />
+
+  <utility
+      name="flatmap_viewer"
+      component=".annotator.FlatmapViewerAnnotatorFactory"
+      provides="pmr2.app.annotation.interfaces.IExposureFileAnnotator"
+      />
 
 </configure>

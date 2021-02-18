@@ -1,0 +1,25 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="pmr2">
+
+  <browser:page
+      for="pmr2.app.exposure.interfaces.IExposureFile"
+      name="flatmap_viewer"
+      class=".view.FlatmapViewer"
+      permission="zope2.View"
+      />
+
+  <!--
+  <browser:resourceDirectory
+      name="pmr2.flatmap.css"
+      directory="css"
+      />
+
+  <browser:resourceDirectory
+      name="pmr2.flatmap.js"
+      directory="js"
+      />
+  -->
+
+</configure>

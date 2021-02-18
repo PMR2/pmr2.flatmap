@@ -1,0 +1,11 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="pmr2.flatmap">
+
+  <utility
+      provides="zope.schema.interfaces.IVocabularyFactory"
+      component=".vocab.FlatmapHostsVocab"
+      name="pmr2.vocab.flatmap_hosts"
+      />
+
+</configure>
