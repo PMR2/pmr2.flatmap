@@ -75,6 +75,11 @@ class IFlatmapViewerNote(zope.interface.Interface):
         vocabulary='pmr2.vocab.flatmap_hosts',
     )
 
+    flatmap_host_root = zope.schema.ASCII(
+        title=u'Flatmap Host Root',
+        description=u'The host uri root that was most recently used',
+    )
+
     initial_response = zope.schema.Text(
         title=u'Initial Response',
         description=u'The initial response JSON returned by the generation '

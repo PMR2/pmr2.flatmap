@@ -22,6 +22,6 @@ class FlatmapHostsVocab(SimpleVocabulary):
             return
 
         super(FlatmapHostsVocab, self).__init__([
-            SimpleTerm(value, value, title=u'%s (%s)' % (key, value))
+            SimpleTerm(key, value, title=u'%s (%s)' % (key, value))
             for key, value in sorted(settings.flatmap_hosts.items())
         ])
