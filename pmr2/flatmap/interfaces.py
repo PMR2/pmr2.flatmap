@@ -63,8 +63,10 @@ class IFlatmapViewerNote(zope.interface.Interface):
                      "service for the selected flatmap host; only necessary "
                      "if service requires one and the bearer token was not "
                      "configured in the registry for the named service. "
-                     "Value should be scrubbed after the flatmap generation "
-                     "is done.  When in doubt, leave this field empty.",
+                     "The token assigned here should be scrubbed after the "
+                     "flatmap generation is successfully sent.  When in "
+                     "doubt, ensure this field is updated using an empty "
+                     "value.",
         required=False,
     )
 

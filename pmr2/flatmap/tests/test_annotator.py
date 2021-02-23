@@ -7,7 +7,9 @@ from zope.component import getUtility, provideAdapter
 from plone.registry.interfaces import IRegistry
 
 from pmr2.app.exposure.interfaces import (
-    IExposureFolder, IExposureFile, IExposure, IExposureSourceAdapter)
+    IExposureFolder, IExposureFile, IExposure, IExposureSourceAdapter,
+    IExposureWizard,
+)
 from pmr2.app.exposure.content import ExposureContainer, Exposure
 from pmr2.app.exposure.tests.base import ExposureDocTestCase
 
@@ -46,6 +48,14 @@ class MockExposureSource:
         return self.context, mock_workspace, self.context.path
 
 
+class MockWizard:
+    implements(IExposureWizard)
+    structure = {}
+
+    def __init__(self, *a, **kw):
+        pass
+
+
 class TestFlatmapViewerAnnotator(TestCase):
 
     layer = layer.FLATMAP_INTEGRATION_LAYER
@@ -54,6 +64,8 @@ class TestFlatmapViewerAnnotator(TestCase):
         self.context = MockExposureObject('demo_manifest.json')
         provideAdapter(MockExposureSource, (MockExposureObject,),
             IExposureSourceAdapter)
+        provideAdapter(MockWizard, (MockExposureObject,),
+            IExposureWizard)
 
         registry = getUtility(IRegistry)
         self.settings = registry.forInterface(
@@ -66,6 +78,7 @@ class TestFlatmapViewerAnnotator(TestCase):
     def tearDown(self):
         # restore any stubs of the requests module.
         annotator.requests = requests
+        MockWizard.structure = {}
 
     def setup_annotator_requests(self, bearer_token=''):
         annotator.requests = DummySession(json.dumps({
@@ -169,6 +182,39 @@ class TestFlatmapViewerAnnotator(TestCase):
             e.exception[0],
             "No `map_id` found in response provided by flatmap server",
         )
+
+    def test_annotator_auth_wizard_removed(self):
+        flatmap_viewer_struct = {
+            'bearer_token': 'demotoken',
+            'flatmap_host': u'Local'
+        }
+        MockWizard.structure = [
+            ('demo_manifest.json', {
+                'file_type': '/pmr/filetype/flatmap', 'views': [
+                    ('flatmap_viewer', flatmap_viewer_struct,),
+                ],
+            }),
+        ]
+        results = dict(self.setup_annotator_requests(
+            bearer_token='demotoken'
+        ).generate())
+        # poke the dummy for test validation
+        uri, a, kw = annotator.requests.history[0]
+        self.assertEqual(uri, 'http://example.com:1234/make/map')
+        self.assertEqual(json.loads(kw['data']), {
+            "source": "http://nohost/mw/@@rawfile/123/demo_manifest.json"})
+        self.assertEqual(kw['headers'], {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer demotoken',
+        })
+        self.assertEqual(results, {
+            'flatmap_host': 'Demo Flatmap Host',
+            'flatmap_host_root': 'http://example.com:1234',
+            'initial_response': annotator.requests.response.text,
+            'map_id': 'demo_mapid',
+        })
+        self.assertNotIn('bearer_token', flatmap_viewer_struct)
+
 
 def test_suite():
     suite = TestSuite()

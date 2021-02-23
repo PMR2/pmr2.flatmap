@@ -14,7 +14,10 @@ from pmr2.app.annotation.interfaces import (
     IExposureFilePostEditAnnotator,
 )
 from pmr2.app.annotation.annotator import ExposureFileAnnotatorBase
-from pmr2.app.exposure.interfaces import IExposureSourceAdapter
+from pmr2.app.exposure.interfaces import (
+    IExposureSourceAdapter,
+    IExposureWizard,
+)
 
 from pmr2.flatmap.interfaces import (
     IFlatmapViewerNote,
@@ -51,6 +54,18 @@ class FlatmapViewerAnnotator(ExposureFileAnnotatorBase):
         headers = {'Content-Type': 'application/json'}
         if data['bearer_token']:
             headers['Authorization'] = "Bearer %s" % data['bearer_token']
+            try:
+                # attempt to strip token from wizard in a backhanded manner
+                wizard = zope.component.getAdapter(exposure, IExposureWizard)
+                views = dict(wizard.structure)[path]['views']
+                dict(views)['flatmap_viewer'].pop('bearer_token', '')
+            except Exception:
+                # token wasn't declared via the wizard or failed to be
+                # removed
+                logger.exception(
+                    "Failed to remove wizard bearer token for %r, %s",
+                    exposure, path
+                )
         elif flatmap_host_token:
             headers['Authorization'] = "Bearer %s" % flatmap_host_token
 
