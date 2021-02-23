@@ -1,14 +1,18 @@
 from unittest import TestCase, TestSuite, makeSuite
+import json
+import requests
 
 from zope.interface import implements
 from zope.component import provideAdapter
 
-from pmr2.app.interfaces import *
-from pmr2.app.exposure.interfaces import *
+from pmr2.app.exposure.interfaces import (
+    IExposureFolder, IExposureFile, IExposure, IExposureSourceAdapter)
 from pmr2.app.exposure.content import ExposureContainer, Exposure
 from pmr2.app.exposure.tests.base import ExposureDocTestCase
 
+from pmr2.flatmap import annotator
 from pmr2.flatmap.annotator import FlatmapViewerAnnotator
+from pmr2.flatmap.testing.requests import DummySession
 
 
 class MockWorkspace:
@@ -22,11 +26,11 @@ class MockExposureObject:
     implements(IExposureFolder, IExposureFile, IExposure)
     commit_id = '123'
     keys = ['valid']
-    path = ''
     test_input = '{}'
 
     def __init__(self, filename):
         self.id = filename
+        self.path = filename
 
 
 class MockExposureSource:
@@ -47,15 +51,38 @@ class TestFlatmapViewerAnnotator(TestCase):
             IExposureSourceAdapter)
 
     def tearDown(self):
-        pass
+        # restore any stubs of the requests module.
+        annotator.requests = requests
 
     def test_annotator_basic(self):
-        annotator = FlatmapViewerAnnotator(self.context, None)
+        annotator.requests = DummySession(json.dumps({
+            "map": "demo_mapid",
+            "process": 1234,
+            "source": "http://nohost/mw/rawfile/123/demo_manifest.json",
+            "status": "started",
+        }))
+        fva = FlatmapViewerAnnotator(self.context, None)
         # must assign the name like how this would have generated via
         # adapter.
-        annotator.__name__ = 'flatmap_viewer'
+        fva.__name__ = 'flatmap_viewer'
+        fva.data = (
+            ('bearer_token', ''),
+            ('flatmap_host', 'http://example.com:1234'),
+        )
         # TODO mock the API and fields
-        # results = dict(annotator.generate())
+        results = dict(fva.generate())
+        # poke the dummy for test validation
+        uri, a, kw = annotator.requests.history[0]
+        self.assertEqual(uri, 'http://example.com:1234/make/map')
+        self.assertEqual(json.loads(kw['data']), {
+            "source": "http://nohost/mw/@@rawfile/123/demo_manifest.json"})
+        self.assertEqual(kw['headers'], {'Content-Type': 'application/json'})
+
+        self.assertEqual(results, {
+            'flatmap_host': 'http://example.com:1234',
+            'initial_response': annotator.requests.response.text,
+            'map_id': 'demo_mapid',
+        })
 
 
 def test_suite():
