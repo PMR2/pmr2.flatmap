@@ -12,4 +12,4 @@ class FlatmapViewer(ExposureFileViewBase):
     The flatmap viewer.
     """
 
-    template = ViewPageTemplateFile('flatmap_viewer.pt')
+    index = ViewPageTemplateFile('flatmap_viewer.pt')

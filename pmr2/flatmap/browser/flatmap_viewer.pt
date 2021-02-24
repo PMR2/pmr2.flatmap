@@ -1,8 +1,20 @@
-<h1>Flatmap viewer</h1>
-<p>A static view provided by the flatmap server (<a tal:attributes="
-  href string:${view/note/flatmap_host_root}/viewer/
-">interactive viewer</a>)</p>
-<iframe style="width: 100%; height: 40em;" tal:attributes="
-  src string:${view/note/flatmap_host_root}/flatmap/${view/note/map_id}
-"></iframe>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/@@pmr2-z3cform-macros/main">
 
+<body>
+  <metal:slot metal:fill-slot="main" i18n:domain="cmf_default">
+    <div id="layout-contents">
+    <h1>Flatmap viewer</h1>
+    <p>A static view provided by the flatmap server (<a tal:attributes="
+      href string:${view/note/flatmap_host_root}/viewer/
+    ">interactive viewer</a>)</p>
+    <iframe style="width: 100%; height: 40em;" tal:attributes="
+      src string:${view/note/flatmap_host_root}/flatmap/${view/note/map_id}
+    "></iframe>
+    </div>
+  </metal:slot>
+</body>
+</html>
