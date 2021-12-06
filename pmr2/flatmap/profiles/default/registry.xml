@@ -3,7 +3,5 @@
   <records
       interface="pmr2.flatmap.interfaces.ISettings"
       prefix="pmr2.flatmap.settings">
-    <value key="flatmap_hosts"></value>
-    <value key="flatmap_hosts_bearer_token"></value>
   </records>
 </registry>
