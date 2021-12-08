@@ -16,10 +16,32 @@
       name="flatmap_viewer"
       />
 
+  <adapter
+      for="pmr2.app.exposure.interfaces.IExposureFile"
+      factory=".note.SDSNoteFactory"
+      provides="pmr2.flatmap.interfaces.ISDSNote"
+      name="flatmap_sds_archive"
+      />
+
+  <!-- Annotators-->
+
   <utility
       name="flatmap_viewer"
       component=".annotator.FlatmapViewerAnnotatorFactory"
       provides="pmr2.app.annotation.interfaces.IExposureFileAnnotator"
+      />
+
+  <utility
+      name="flatmap_sds_archive"
+      component=".annotator.SDSAnnotatorFactory"
+      provides="pmr2.app.annotation.interfaces.IExposureFileAnnotator"
+      />
+
+  <!-- Supporting utilities -->
+
+  <utility
+      factory=".utility.MapDataMakerUtility"
+      provides="pmr2.flatmap.interfaces.IMapDataMakerUtility"
       />
 
 </configure>

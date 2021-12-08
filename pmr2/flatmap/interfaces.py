@@ -37,6 +37,13 @@ class ISettings(zope.interface.Interface):
         required=False,
     )
 
+    flatmap_sds_datamaker = zope.schema.TextLine(
+        title=u'Flatmap SDS datamaker',
+        description=u'The path to the mapdatamaker binary.',
+        default=u'mapdatamaker',
+        required=False,
+    )
+
 
 class IFlatmapViewerNote(zope.interface.Interface):
     """
@@ -96,3 +103,15 @@ class IFlatmapViewerNote(zope.interface.Interface):
                      'exposure file view.',
         required=False,
     )
+
+
+class ISDSNote(zope.interface.Interface):
+    """
+    SDS note.
+    """
+
+
+class IMapDataMakerUtility(zope.interface.Interface):
+    """
+    Marker interface for mapdatamaker utility
+    """

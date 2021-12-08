@@ -5,6 +5,7 @@ from pmr2.app.annotation import note_factory as factory
 from pmr2.app.annotation.note import ExposureFileNoteBase
 from pmr2.app.annotation.note import ExposureFileEditableNoteBase
 from pmr2.flatmap.interfaces import IFlatmapViewerNote
+from pmr2.flatmap.interfaces import ISDSNote
 
 
 class FlatmapViewerNote(ExposureFileNoteBase):
@@ -23,3 +24,13 @@ class FlatmapViewerNote(ExposureFileNoteBase):
         IFlatmapViewerNote['map_id'])
 
 FlatmapViewerNoteFactory = factory(FlatmapViewerNote, 'flatmap_viewer')
+
+
+class SDSNote(ExposureFileNoteBase):
+    """
+    SDS Note
+    """
+
+    zope.interface.implements(ISDSNote)
+
+SDSNoteFactory = factory(SDSNote, 'flatmap_sds_archive')

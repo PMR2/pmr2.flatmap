@@ -1,5 +1,12 @@
 import json
 import logging
+from os import makedirs
+from os.path import (
+    exists,
+    join,
+    isdir,
+)
+from shutil import rmtree
 
 import zope.interface
 import zope.component
@@ -21,6 +28,8 @@ from pmr2.app.exposure.interfaces import (
 
 from pmr2.flatmap.interfaces import (
     IFlatmapViewerNote,
+    IMapDataMakerUtility,
+    ISDSNote,
     ISettings,
 )
 
@@ -92,3 +101,31 @@ class FlatmapViewerAnnotator(ExposureFileAnnotatorBase):
         )
 
 FlatmapViewerAnnotatorFactory = named_factory(FlatmapViewerAnnotator)
+
+
+class SDSAnnotator(ExposureFileAnnotatorBase):
+    zope.interface.implements(IExposureFileAnnotator)
+    for_interface = ISDSNote
+    title = u'Flatmap SDS'
+    label = u'Flatmap SDS Exporter'
+
+    def generate(self):
+        settings = zope.component.queryUtility(IPMR2GlobalSettings)
+        root = settings.dirOf(self.context)
+        view_root = join(root, self.__name__)
+        if not isdir(root):
+            makedirs(root)
+        if exists(view_root):
+            rmtree(view_root)
+        makedirs(view_root)
+
+        helper = zope.component.queryAdapter(
+            self.context, IExposureSourceAdapter)
+        exposure, workspace, path = helper.source()
+        output_target = join(view_root, 'dataset.zip')
+
+        utility = zope.component.queryUtility(IMapDataMakerUtility)
+        utility(workspace, exposure.commit_id, path, output_target)
+        return ()
+
+SDSAnnotatorFactory = named_factory(SDSAnnotator)
