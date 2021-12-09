@@ -10,6 +10,13 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      for="pmr2.app.exposure.interfaces.IExposureFile"
+      name="flatmap_sds_archive_download"
+      class=".view.FlatmapSDSArchiveDownload"
+      permission="zope2.View"
+      />
+
   <!--
   <browser:resourceDirectory
       name="pmr2.flatmap.css"

@@ -1,6 +1,6 @@
 import os
 import json
-from os.path import join, dirname, isdir
+from os.path import exists, join, dirname, isdir
 from shutil import rmtree
 from subprocess import Popen
 from logging import getLogger
@@ -11,11 +11,44 @@ import zope.interface
 
 from plone.registry.interfaces import IRegistry
 
+from pmr2.app.annotation.factory import has_note
+from pmr2.app.exposure.interfaces import IExposureDownloadTool
+from pmr2.app.settings.interfaces import IPMR2GlobalSettings
+
 from pmr2.flatmap.interfaces import IMapDataMakerUtility
 from pmr2.flatmap.interfaces import ISettings
 
 logger = getLogger(__name__)
 prefix = 'pmr2.flatmap.settings'
+
+
+@zope.interface.implementer(IExposureDownloadTool)
+class FlatmapSDSArchiveDownloadTool(object):
+    """
+    COMBINE Archive Download tool for a handcrafted manifest.
+    """
+
+    label = u'SDS Dataset Export'
+    suffix = '.zip'
+    mimetype = 'application/zip'
+
+    def get_archive_path(self, exposure_object):
+        settings = zope.component.queryUtility(IPMR2GlobalSettings)
+        return join(
+            settings.dirOf(exposure_object),
+            'flatmap_sds_archive', 'dataset.zip'
+        )
+
+    def get_download_link(self, exposure_object):
+        if not has_note(exposure_object, 'flatmap_sds_archive'):
+            return False
+        if not exists(self.get_archive_path(exposure_object)):
+            return False
+        return exposure_object.absolute_url() + '/flatmap_sds_archive_download'
+
+    def download(self, exposure_object, request):
+        with open(self.get_archive_path(exposure_object), 'rb') as fd:
+            return fd.read()
 
 
 @zope.interface.implementer(IMapDataMakerUtility)

@@ -44,4 +44,10 @@
       provides="pmr2.flatmap.interfaces.IMapDataMakerUtility"
       />
 
+  <utility
+      name="flatmap_sds_archive"
+      factory=".utility.FlatmapSDSArchiveDownloadTool"
+      provides="pmr2.app.exposure.interfaces.IExposureDownloadTool"
+      />
+
 </configure>
